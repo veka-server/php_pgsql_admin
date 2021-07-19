@@ -1,0 +1,55 @@
+*{margin:0;padding:0;border:0;vertical-align:baseline}
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+html {width:100%;height:100%;overflow:hidden;}
+body{line-height:1;font-family:'Roboto',sans-serif;background:#F0F0F0;width:100%;height:100%;font-size:14px;}
+ol,ul{list-style:none}
+blockquote,q{quotes:none}
+table{border-collapse:collapse;border-spacing:0}
+a{color:#000;text-decoration:none}
+
+#main_header{background:#32393D;color:#fff;width:100%;position: fixed; top:0; left:0; max-height:70px;}
+#main_header #logo{padding:20px;vertical-align:middle;line-height:30px;display:inline-block;width:300px}
+#main_header #logo i{padding-right:10px;font-size:1.5em;vertical-align:middle;line-height:30px}
+#main_header ul{display:inline-block}
+#main_header ul li{display:inline-block}
+#main_header ul li a{padding:0 20px;color:#fff;border-top:5px solid transparent;line-height:60px; height:70px;display:inline-block;box-sizing:border-box;}
+#main_header ul li a:hover{background:rgba(255,255,255,0.2);border-color:white;}
+#main_header ul li a.active{border-color:white;}
+#main_header ul li a i{padding-right:10px}
+
+#left_menu {width:300px;border-right:1px solid rgba(0,0,0,0.15);height:calc(100% - 70px); margin-top:70px; background:#FBFBFB;display: inline-block;vertical-align:top;}
+#left_menu .title {background:#F0F0F0; border-bottom:1px solid rgba(0,0,0,0.15); border-top:1px solid rgba(0,0,0,0.15);font-weight: bolder; font-size:0.8em; padding:5px; text-align: center;}
+#left_menu .elem select { background: white; padding:7px; border:1px solid rgba(0,0,0,0.15); margin:20px;width: calc(100% - 40px); box-sizing: border-box; box-shadow: 1px 1px 1px rgba(0,0,0,0.2);}
+#left_menu .elem ul.list_table li {display: block; box-sizing: border-box;}
+#left_menu .elem ul.list_table li a{display: block; box-sizing: border-box; padding:11px;}
+#left_menu .elem ul.list_table li a i{padding-right:6px;}
+#left_menu .elem ul.list_table li a:hover {background:#32393D; color:white;}
+#left_menu #table_list_content {height: calc(100% - 120px); overflow: auto;}
+
+#content_body {width:calc(100% - 301px);height:calc(100% - 70px);display: inline-block;vertical-align:top; overflow: scroll;margin-top:70px;}
+
+table.blueTable{border:1px solid #1C6EA4;background-color:#fff;width:100%;text-align:left;border-collapse:collapse}
+table.blueTable td,table.blueTable th{border:1px solid #AAA;padding:5px 7px}
+table.blueTable tbody td{font-size:13px}
+table.blueTable tr:nth-child(even){background:#D0E4F5}
+table.blueTable thead{background:#1C6EA4;background:-moz-linear-gradient(top,#5592bb 0%,#327cad 66%,#1C6EA4 100%);background:-webkit-linear-gradient(top,#5592bb 0%,#327cad 66%,#1C6EA4 100%);background:linear-gradient(to bottom,#5592bb 0%,#327cad 66%,#1C6EA4 100%);border-bottom:2px solid #444;color:#fff;text-transform:uppercase}
+table.blueTable thead th{font-size:15px;font-weight:700;color:#FFF;border-left:2px solid #D0E4F5}
+table.blueTable thead th:first-child{border-left:none}
+table.blueTable tfoot{font-size:14px;font-weight:700;color:#FFF;background:#D0E4F5;background:-moz-linear-gradient(top,#dcebf7 0%,#d4e6f6 66%,#D0E4F5 100%);background:-webkit-linear-gradient(top,#dcebf7 0%,#d4e6f6 66%,#D0E4F5 100%);background:linear-gradient(to bottom,#dcebf7 0%,#d4e6f6 66%,#D0E4F5 100%);border-top:2px solid #444}
+table.blueTable tfoot td{font-size:14px}
+table.blueTable tfoot .links{text-align:right}
+table.blueTable tfoot .links a{display:inline-block;background:#1C6EA4;color:#FFF;padding:2px 8px;border-radius:5px}
+
+#bloc_request{padding:20px}
+#bloc_request textarea{width:calc(100% - 40px);border:1px solid rgba(0,0,0,0.3);padding:7px 10px;}
+#show_data{padding:20px}
+input[type="button"]{background:#1C6EA4;border:1px solid rgba(0,0,0,0.1);padding:3px 7px;color:#fff}
+input[type="button"]:hover{background:#175279;cursor:pointer}
+input[type="button"]:disabled {background: #8d8d8d;}
+input[type="button"]:disabled:hover {background: #8d8d8d;cursor: default}
+#stat_request {float:right; margin:7px 20px; color:rgba(0,0,0,0.7)}
+
+.pagination { margin-top: 20px; }
+.pagination input[type="button"].prev_page{ }
+.pagination input[type="button"].next_page{ margin-left: 20px;}
+.pagination input[data-curr-page="1"].prev_page, .pagination input[data-curr-page="1"].first_page{background: #8d8d8d;cursor: default}
