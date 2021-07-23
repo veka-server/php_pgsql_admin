@@ -16,19 +16,7 @@ class Pagination
             $_POST['page_curr'] = 1;
         }
 
-        if( ($_POST['page_size'] ?? 0 ) <= 0 ){
-            $_POST['page_size'] = 20;
-        }
-
-        return ' LIMIT '.(int) $_POST['page_size'].' OFFSET '.((int) $_POST['page_curr']*(int)$_POST['page_size'] - (int)$_POST['page_size']);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSelectSQL()
-    {
-        return ' count(*) OVER() AS count_self ';
+        return ' LIMIT '.self::getPageSize().' OFFSET '.((int) $_POST['page_curr']* self::getPageSize() - self::getPageSize());
     }
 
     /**
@@ -47,6 +35,13 @@ class Pagination
         return (int) ($nb_line ?? 0 );
     }
 
+    public static function getPageSize(){
+        if( ($_POST['page_size'] ?? 0 ) <= 0 ){
+            $_POST['page_size'] = 20;
+        }
+        return (int) $_POST['page_size'];
+    }
+
     /**
      * Modifie une requete select pour l'utiliser avec la self
      * La requete doit commencer par select
@@ -62,42 +57,46 @@ class Pagination
 
         $clean_sql = trim($sql);
 
+        if(substr( $clean_sql, 0, strlen( 'SELECT' ) ) !== 'SELECT'){
+            throw new \Exception('la requete doit commencer par un select');
+        }
+
+        $last_page_requested = (($_POST['page_curr'] ?? '') == 'last');
+
+        /** si la requete porte demande explicitement la derniere page */
+        if($last_page_requested == true) {
+            /** realise un count pour connaitre le nombre de page mais impact pas mal les performances */
+            $count_sql = 'SELECT count(*) AS count_self FROM ('.$clean_sql.') main ';
+            $rs = PGSQL::executeRequest($count_sql);
+            $nb_line = self::getNbLineFromRS($rs);
+            $_POST['page_curr'] = ceil($nb_line / self::getPageSize() );
+        }
+
         $response['page_curr'] = (int) ($_POST['page_curr'] ?? 1);
 
         if($response['page_curr'] <= 0 ){
             $response['page_curr'] = 1;
         }
 
-        if(substr( $clean_sql, 0, strlen( 'SELECT' ) ) !== 'SELECT'){
-            throw new \Exception('la requete doit commencer par un select');
-        }
-
-        $clean_sql = self::addFiltre($clean_sql);
-
-        /**
-         * estimation du nombre de ligne d'une table
-
-            SELECT reltuples::bigint AS estimate
-            FROM   pg_class
-            WHERE  oid = 'projection_compta_campagne'::regclass;
-
-         */
-
-//      $clean_sql = preg_replace('/SELECT/i','SELECT '.self::getSelectSQL().', ', $clean_sql, 1);
+        $clean_sql = 'SELECT main.* FROM ('.$clean_sql.') main ';
         $clean_sql .= self::getLimitSQL();
 
         $rs = PGSQL::executeRequest($clean_sql);
 
+        $response['page_size'] = self::getPageSize();
+        $response['is_last_page'] = self::getPageSize() > count($rs) || $last_page_requested ;
+
         if(empty($rs)){
-            $response['page_nb'] = 1;
-            return [];
+            if($response['page_curr'] > 1){
+                $_POST['page_curr'] = 'last';
+                return self::query($response, $sql, $param_sql);
+            } else {
+                $response['page_nb'] = 1;
+                return [];
+            }
         }
 
-        // recuperer le nombre de ligne depuis le rs
-        $nb_line = self::getNbLineFromRS($rs);
-        $response['page_nb'] = ceil($nb_line / (int) $_POST['page_size']);
-
-        if($response['page_nb'] <= 0 ){
+        if($response['page_nb'] ?? 0 <= 0 ){
             $response['page_nb'] = 1;
         }
 
@@ -106,9 +105,10 @@ class Pagination
 
     /**
      * @param string $clean_sql
+     * @param $param_sql
      * @return string
      */
-    private static function addFiltre(string $clean_sql)
+    private static function addFiltre(string $clean_sql, &$param_sql)
     {
         if(!isset($_POST['filtre']) || empty($_POST['filtre'])) {
             return $clean_sql;
@@ -117,10 +117,32 @@ class Pagination
         $where = [];
         foreach ($_POST['filtre'] as $name => $value){
             $value = trim($value);
-            if(empty($value)){
+            if(empty($value) || $name == 'order_by'){
                 continue;
             }
-            $where[] = $name.' LIKE \'%'.$value.'%\'';
+
+            if(strpos($name, '-') === false){
+                $name = 's-'.$name;
+            }
+
+            list($prefix, $name) = explode('-',$name);
+
+            $name = preg_replace('/[^a-zA-Z0-9_-]/s', '', $name);
+
+            switch ($prefix){
+
+                case 'i' :
+                    $where[] = 'LOWER('.$name.'::text) LIKE :'.$name.'';
+                    $param_sql['s-'.$name] = '%'.(int)$value.'%';
+                    break;
+
+                case 's' :
+                    $where[] = 'LOWER('.$name.') LIKE LOWER(:'.$name.')';
+                    $param_sql['s-'.$name] = '%'.$value.'%';
+                    break;
+
+            }
+
         }
 
         return 'SELECT main.* FROM ('.$clean_sql.') main '.( count($where) > 0 ? ' WHERE ' : '').implode(' AND ', $where);

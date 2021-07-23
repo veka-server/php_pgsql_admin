@@ -52,4 +52,4 @@ input[type="button"]:disabled:hover {background: #8d8d8d;cursor: default}
 .pagination { margin-top: 20px; }
 .pagination input[type="button"].prev_page{ }
 .pagination input[type="button"].next_page{ margin-left: 20px;}
-.pagination input[data-curr-page="1"].prev_page, .pagination input[data-curr-page="1"].first_page{background: #8d8d8d;cursor: default}
+.pagination input[data-curr-page="1"].prev_page, .pagination input[data-curr-page="1"].first_page, .pagination input.next_page.is_last_page, .pagination input.last_page.is_last_page {background: #8d8d8d;cursor: default}

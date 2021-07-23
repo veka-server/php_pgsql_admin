@@ -28,6 +28,8 @@ class Simple extends OneFileFramework
                 'execution_time' => $seconds
                 ,'page_curr' => $response['page_curr']
                 ,'page_nb' => $response['page_nb']
+                ,'page_size' => $response['page_size']
+                ,'is_last_page' => $response['is_last_page']
             ]
         ]);
         die();
@@ -40,7 +42,7 @@ class Simple extends OneFileFramework
 
         $found = false;
         foreach ($schema as $s){
-            if($s['table_schema'] != $_SESSION['current_schema'] ){
+            if($s['table_schema'] != ($_SESSION['current_schema'] ?? null) ){
                 continue;
             }
             $found = true;
@@ -60,7 +62,7 @@ class Simple extends OneFileFramework
 
         $found = false;
         foreach ($tables as $s){
-            if($s['table_name'] != $_SESSION['current_table'] ){
+            if($s['table_name'] != ( $_SESSION['current_table'] ?? null) ){
                 continue;
             }
             $found = true;
